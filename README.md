@@ -27,44 +27,6 @@ A small, dependency-free web tool that previews how exploding TNT pushes other p
 | `C` | Center camera at 0, 0, 0 |
 | `B` | Toggle border |
 
-## Run it
-
-Open `index.html` in a browser, or serve the folder (recommended):
-
-```bash
-python -m http.server 8000
-```
-
-Then open `http://localhost:8000`.
-
-> If you open `index.html` straight from disk (`file://`), browsers treat the PNG textures as another origin, so **recordings are made without textures**. The on-screen view is textured either way. Serving the folder (or using GitHub Pages) avoids this.
-
-### GitHub Pages
-
-Push the folder to a repository, then enable Pages (Settings > Pages > deploy from the branch root). Keep the `textures/` folder next to `index.html`.
-
-## Preset file format
-
-Presets export as JSON inside a `.txt` file:
-
-```json
-{
-  "app": "tnt-velocity",
-  "v": 1,
-  "presets": [
-    {
-      "name": "Example",
-      "items": [
-        { "x": 2, "y": 0.5, "z": 0, "n": 1, "fuse": 80, "mom": false, "lay": "s", "m": "3d" },
-        { "x": 0, "y": 1, "z": 0, "n": 1, "fuse": 0, "mom": false, "lay": "s", "m": "3d" }
-      ]
-    }
-  ]
-}
-```
-
-`fuse` is in ticks (`0` = instant), `lay` is `s` (stack) or `c` (cube), and `mom` toggles spawn momentum.
-
 ## How it works
 
 - **Movement** (per tick): gravity `-0.04`, drag `0.98`, and on the ground horizontal velocity `x0.7` and vertical `x-0.5`. Floor is at `Y = 0`.
