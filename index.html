@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Preview TNT-to-TNT explosion knockback in 2D and 3D, with presets and video recording.">
+<title>TNT Velocity Preview</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<noscript>This app needs JavaScript to run.</noscript>
+<div class="app">
+<header>
+<div class="brand"><div class="logo"></div><div><h1>TNT Velocity Preview</h1><div class="sub">Simulate TNT-to-TNT explosion knockback</div></div></div>
+<div class="grp"><div class="seg" id="sv"><button id="v2s" class="on">Side</button><button id="v2t">Top</button></div><div class="seg"><button id="b2" class="on">2D</button><button id="b3">3D</button></div></div>
+</header>
+<main>
+<div class="cv"><canvas id="c"></canvas><div class="hud" id="hud"></div>
+<div class="legend"><span><i style="background:#2f7bd9"></i>velocity</span><span><i style="background:#d98a2b"></i>trail</span></div></div>
+<div class="bar">
+<div class="grp"><button id="pl" class="pri">Play</button><button id="rc">Record</button><select id="rb" title="Video background"><option value="theme">BG: Theme</option><option value="white">BG: White</option><option value="black">BG: Black</option><option value="green">BG: Green</option><option value="transparent">BG: Transparent</option></select></div>
+<div class="grp"><button id="st">+1 tick</button><button id="rs">Reset</button><button id="fit">Focus</button><button id="cc" title="Move the camera center to 0, 0, 0">Center Camera</button><button id="pm" title="In 2D, dragging always pans">Drag: Rotate</button>
+<select id="km" title="Explosion knockback formula"><option value="bedrock">Knockback: Bedrock</option><option value="custom">Knockback: Custom (4 b/s, 4 blocks)</option></select>
+<select id="sp1" title="Simulation speed"><option value="0.1">0.1x</option><option value="0.25">0.25x</option><option value="1" selected>1x</option><option value="3">3x</option></select></div>
+<div class="grp"><label class="chip"><input type="checkbox" id="oa" checked>Arrows</label><label class="chip"><input type="checkbox" id="ot" checked>Trails</label><label class="chip"><input type="checkbox" id="of" checked>Floor</label><label class="chip"><input type="checkbox" id="ob">Border</label></div>
+</div>
+<div class="keys">Shortcuts: Space = Play/Pause, S = +1 tick, R = Reset, F = Focus, C = Center Camera, B = Border</div>
+</main>
+<aside class="side">
+<section class="panel">
+<h2>Spawn TNT</h2>
+<div class="row"><label>At: <span id="atl">X, Y</span></label>
+<div class="g"><input id="ax" type="number" step="any" value="0"><input id="ay" type="number" step="any" value="0.5"><input id="az" type="number" step="any" value="0" hidden></div></div>
+<div class="row"><label>Tick</label>
+<div class="g"><select id="fs"><option value="n">Normal (80)</option><option value="i">Int</option></select><input id="fn" type="number" min="0" step="1" value="0" disabled></div>
+<small>Int: 0 = explodes instantly</small></div>
+<div class="row"><label>Spawn Momentum</label><select id="mom"><option value="false">false</option><option value="true">true</option></select></div>
+<div class="row"><label>Count</label>
+<div class="g"><input id="cnt" type="number" min="1" max="500" step="1" value="1"><select id="lay"><option value="s">Stack</option><option value="c">Cube</option></select></div></div>
+<div class="g"><button id="sp" class="pri">Spawn TNT</button><button id="ad">+ Preset</button><button id="ex">Example</button></div>
+</section>
+<section class="panel">
+<h2>Presets</h2>
+<div id="dl"></div>
+<div class="g" style="margin:10px 0"><input id="pn" placeholder="Preset name"><button id="ps">Save Preset</button></div>
+<div id="pls"></div>
+<div class="g" style="margin-top:10px"><button id="pe">Export .txt</button><button id="pi">Import .txt</button></div>
+<textarea id="pt" rows="4" placeholder="Export fills this box (copy the text). To import, paste preset text here and press Import from text." style="width:100%;margin-top:8px;font:12px ui-monospace,Menlo,monospace"></textarea>
+<button id="pt2" style="margin-top:6px">Import from text</button>
+<input id="pf" type="file" accept=".txt,text/plain,application/json" hidden>
+<div id="vs" style="margin-top:8px"></div>
+</section>
+<section class="panel"><h2>Log</h2><pre id="log"></pre></section>
+</aside>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
