@@ -15,11 +15,12 @@ function explode(e){
     if(o===e||o.dead)continue;
     // identical origin (same X, Y, Z as the exploding TNT)?
     const same=Math.abs(o.x-e.x)<1e-6&&Math.abs(o.y-e.y)<1e-6&&Math.abs(o.z-e.z)<1e-6;
-    const dx=o.x-ex,dy=o.y-ey,dz=o.z-ez,l=Math.hypot(dx,dy,dz);   // explosion center -> the TNT's feet
+    const hx=o.x,hy=o.y+0.49,hz=o.z;
+    const dx=hx-ex,dy=hy-ey,dz=hz-ez,l=Math.hypot(dx,dy,dz);   // explosion center -> the TNT's feet
     if(!l&&!same)continue;
     // Bedrock: (1 - (distance - width/2) / (2*power)) * exposure; exposure = 1 (no blocks in the way)
     // Custom: linear falloff, max 4 b/s, range 4 blocks
-    const k=bed?1-(l-.49)/(2*PW):(1-l/4)*4/20;
+    const k=bed?1-Math.max(0,l-.49)/(2*PW):(1-l/4)*4/20;
     if(k<=0)continue;
     // Direction: an identical origin is pushed straight up (+Y); any other TNT follows the explosion sphere,
     // i.e. the vector from the explosion center to the TNT's feet, even if it is only slightly offset
