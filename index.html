@@ -1,57 +1,263 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Preview TNT-to-TNT explosion knockback in 2D and 3D, with presets and video recording.">
 <title>TNT Velocity Preview</title>
+<meta name="theme-color" content="#1b1b1f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="TNT Velocity Preview">
+<meta property="og:description" content="Preview TNT-to-TNT explosion knockback in Minecraft Bedrock, in 2D and 3D, with presets and video recording.">
+<meta property="og:image" content="https://cbrusmcyt.github.io/tnt-velocity-preview/assets/logo.png">
+<meta property="og:url" content="https://cbrusmcyt.github.io/tnt-velocity-preview/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" href="assets/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<noscript><style>#splash{display:none}</style></noscript>
 <link rel="stylesheet" href="style.css">
+<script>try{var t=localStorage.getItem("tntTheme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 </head>
 <body>
 <noscript>This app needs JavaScript to run.</noscript>
+<div id="splash" role="status" aria-live="polite"><img class="sp-logo" src="assets/logo.png" alt="" width="96" height="96"><div class="sp-title">TNT Velocity Preview</div><div class="sp-bar"><i></i></div><div class="sp-sub">Calculating Velocity...</div></div>
+<div class="dback" id="dback"></div>
+<aside class="drawer" id="drawer" aria-label="Menu">
+<div class="dhead"><b>Menu</b><button class="ico" id="dclose" aria-label="Close menu">&times;</button></div>
+<nav class="dnav">
+<button id="nv-home" class="navb on">TNT Simulation Chamber</button>
+<button id="nv-guide" class="navb">Guide (How to use)</button>
+</nav>
+<div class="dsec">
+<h3>Theme</h3>
+<label class="opt"><input type="radio" name="th" value="light">Light (Default)</label>
+<label class="opt"><input type="radio" name="th" value="dark">Dark</label>
+<label class="opt"><input type="radio" name="th" value="lightb">Light Bordered (Dark Border)</label>
+<label class="opt"><input type="radio" name="th" value="darkb">Dark Bordered (White Border)</label>
+<label class="opt"><input type="radio" name="th" value="oreui">OreUI (Minecraft style)</label>
+<label class="opt"><input type="radio" name="th" value="custom">Custom</label>
+<div id="ced" hidden></div>
+</div>
+</aside>
 <div class="app">
-<header>
-<div class="brand"><div class="logo"></div><div><h1>TNT Velocity Preview</h1><div class="sub">Simulate TNT-to-TNT explosion knockback</div></div></div>
-<div class="grp"><div class="seg" id="sv"><button id="v2s" class="on">Side</button><button id="v2t">Top</button></div><div class="seg"><button id="b2" class="on">2D</button><button id="b3">3D</button></div></div>
+<header class="top">
+<button class="ico menu" id="mb" aria-label="Open menu"><span></span><span></span><span></span></button>
+<div class="brand"><img class="logo" src="assets/logo.png" alt="TNT Velocity Preview logo" width="34" height="34"><div><h1>TNT Velocity Preview</h1><div class="sub">Simulate TNT-to-TNT explosion knockback</div></div></div>
+<div class="grp" id="vsegs"><div class="seg" id="sv"><button id="v2s" class="on">Side</button><button id="v2t">Top</button></div><div class="seg"><button id="b2" class="on">2D</button><button id="b3">3D</button></div></div>
 </header>
-<main>
+
+<div id="view-chamber" class="chamber">
+<main class="stage">
 <div class="cv"><canvas id="c"></canvas><div class="hud" id="hud"></div>
 <div class="legend"><span><i style="background:#2f7bd9"></i>velocity</span><span><i style="background:#d98a2b"></i>trail</span></div></div>
-<div class="bar">
-<div class="grp"><button id="pl" class="pri">Play</button><button id="rc">Record</button><select id="rb" title="Video background"><option value="theme">BG: Theme</option><option value="white">BG: White</option><option value="black">BG: Black</option><option value="green">BG: Green</option><option value="transparent">BG: Transparent</option></select></div>
-<div class="grp"><button id="st">+1 tick</button><button id="rs">Reset</button><button id="fit">Focus</button><button id="cc" title="Move the camera center to 0, 0, 0">Center Camera</button><button id="pm" title="In 2D, dragging always pans">Drag: Rotate</button>
-<select id="km" title="Explosion knockback formula"><option value="bedrock">Knockback: Bedrock</option><option value="custom">Knockback: Custom (4 b/s, 4 blocks)</option></select>
-<select id="sp1" title="Simulation speed"><option value="0.1">0.1x</option><option value="0.25">0.25x</option><option value="1" selected>1x</option><option value="3">3x</option></select></div>
-<div class="grp"><label class="chip"><input type="checkbox" id="oa" checked>Arrows</label><label class="chip"><input type="checkbox" id="ot" checked>Trails</label><label class="chip"><input type="checkbox" id="of" checked>Floor</label><label class="chip"><input type="checkbox" id="ob">Border</label></div>
+<div class="toolbar">
+<div class="tb4"><button id="pl" class="pri">Play</button><button id="rc">Record</button><button id="st">+1 tick</button><button id="rs">Reset</button></div>
+<div class="tb3"><button id="fit">Focus</button><button id="cc" title="Move the camera center to 0, 0, 0">Center Camera</button><button id="pm" title="In 2D, dragging always pans">Drag: Rotate</button></div>
+<button id="sm" class="wide" title="Save the start state of the TNT you spawned (position, velocity, fuse) as a Bedrock .mcstructure. Works before or after Play.">Save current state to .mcstructure</button>
 </div>
-<div class="keys">Shortcuts: Space = Play/Pause, S = +1 tick, R = Reset, F = Focus, C = Center Camera, B = Border</div>
+<div id="vs"></div>
+<div class="keys">Shortcuts: Space = Play/Pause, S = +1 tick, R = Reset, F = Focus, C = Center Camera, B = TNT border</div>
 </main>
 <aside class="side">
-<section class="panel">
-<h2>Spawn TNT</h2>
-<div class="row"><label>At: <span id="atl">X, Y</span></label>
+<details class="panel" open><summary>Spawn TNT</summary><div class="pbody">
+<div class="row col"><label>At: <span id="atl">X, Y</span></label>
 <div class="g"><input id="ax" type="number" step="any" value="0"><input id="ay" type="number" step="any" value="0.5"><input id="az" type="number" step="any" value="0" hidden></div></div>
 <div class="row"><label>Tick</label>
 <div class="g"><select id="fs"><option value="n">Normal (80)</option><option value="i">Int</option></select><input id="fn" type="number" min="0" step="1" value="0" disabled></div>
 <small>Int: 0 = explodes instantly</small></div>
+<div class="row col"><label>Velocity: <span id="vl">X, Y</span></label>
+<div class="g vrow"><input id="vx" type="number" step="any" value="0"><input id="vy" type="number" step="any" value="0"><input id="vz" type="number" step="any" value="0" hidden><select id="vu" title="Velocity unit"><option value="t">B/t</option><option value="s">B/s</option><option value="m">B/m</option><option value="h">B/h</option></select></div>
+<small>B = block, t = tick, s = second, m = minute, h = hour</small></div>
 <div class="row"><label>Spawn Momentum</label><select id="mom"><option value="false">false</option><option value="true">true</option></select></div>
 <div class="row"><label>Count</label>
 <div class="g"><input id="cnt" type="number" min="1" max="500" step="1" value="1"><select id="lay"><option value="s">Stack</option><option value="c">Cube</option></select></div></div>
-<div class="g"><button id="sp" class="pri">Spawn TNT</button><button id="ad">+ Preset</button><button id="ex">Example</button></div>
-</section>
-<section class="panel">
-<h2>Presets</h2>
+<div class="g3"><button id="sp" class="pri">Spawn TNT</button><button id="ad">+ Preset</button><button id="ex">Example</button></div>
+</div></details>
+
+<details class="panel" open><summary>Presets</summary><div class="pbody">
+<div class="sub2">Draft</div>
 <div id="dl"></div>
-<div class="g" style="margin:10px 0"><input id="pn" placeholder="Preset name"><button id="ps">Save Preset</button></div>
+<div class="g" style="margin:10px 0 14px"><input id="pn" placeholder="Preset name"><button id="ps">Save Preset</button></div>
+<div class="sub2">Saved presets</div>
 <div id="pls"></div>
-<div class="g" style="margin-top:10px"><button id="pe">Export .txt</button><button id="pi">Import .txt</button></div>
-<textarea id="pt" rows="4" placeholder="Export fills this box (copy the text). To import, paste preset text here and press Import from text." style="width:100%;margin-top:8px;font:12px ui-monospace,Menlo,monospace"></textarea>
-<button id="pt2" style="margin-top:6px">Import from text</button>
-<input id="pf" type="file" accept=".txt,text/plain,application/json" hidden>
-<div id="vs" style="margin-top:8px"></div>
-</section>
-<section class="panel"><h2>Log</h2><pre id="log"></pre></section>
+<div class="g" style="margin-top:12px"><button id="pe">Export all (.tntpreset)</button><button id="pi">Import (.tntpreset)</button></div>
+<textarea id="pt" rows="4" placeholder="Export fills this box (copy the text). To import, paste preset text here and press Import from text."></textarea>
+<button id="pt2" class="wide">Import from text</button>
+<input id="pf" type="file" hidden>
+</div></details>
+
+<details class="panel"><summary>Settings</summary><div class="pbody">
+<div class="row"><label>Speed</label><select id="sp1" title="Simulation speed"><option value="0.1">0.1x</option><option value="0.25">0.25x</option><option value="1" selected>1x</option><option value="3">3x</option></select></div>
+<div class="row"><label>Knockback</label><select id="km" title="Explosion knockback formula"><option value="bedrock">Bedrock</option><option value="custom">Custom (4 b/s, 4 blocks)</option></select></div>
+<div class="row"><label>Explosion order</label><select id="eo" title="What happens when several TNT explode in the same tick"><option value="seq">One after another</option><option value="simul">All at once</option></select></div>
+<div class="row"><label>Recording background</label><select id="rb" title="Background of recorded videos"><option value="theme">Theme</option><option value="white">White</option><option value="black">Black</option><option value="green">Green</option><option value="transparent">Transparent</option></select></div>
+<div class="chips"><label class="chip"><input type="checkbox" id="oa" checked>Arrows</label><label class="chip"><input type="checkbox" id="ot" checked>Trails</label><label class="chip"><input type="checkbox" id="of" checked>Floor</label><label class="chip"><input type="checkbox" id="ob">TNT border</label></div>
+</div></details>
+
+<details class="panel" open><summary>Log</summary><div class="pbody"><pre id="log"></pre></div></details>
 </aside>
+</div>
+
+<div id="view-guide" class="guide" hidden>
+<h2 class="gt">Guide (How to use)</h2>
+<p class="lead">This page explains every button, field and setting of the TNT Simulation Chamber, one by one.</p>
+<nav class="toc">
+<button data-go="g-what">What it does</button><button data-go="g-menu">Menu</button><button data-go="g-theme">Themes</button><button data-go="g-top">Top bar</button><button data-go="g-view">Viewport</button><button data-go="g-controls">Control buttons</button><button data-go="g-settings">Settings</button><button data-go="g-spawn">Spawn TNT</button><button data-go="g-presets">Presets</button><button data-go="g-files">File formats</button><button data-go="g-keys">Shortcuts</button><button data-go="g-physics">Physics rules</button>
+</nav>
+
+<section id="g-what"><h3>What it does</h3>
+<p>The chamber simulates primed TNT in Minecraft Bedrock Edition (approximated). You place TNT, give it a fuse and a starting velocity, and watch how each explosion pushes the other TNT. Everything starts paused, so you can set things up first and press Play when ready.</p>
+</section>
+
+<section id="g-menu"><h3>Menu (three-line button, top left)</h3>
+<ul>
+<li><b>TNT Simulation Chamber</b>: goes to the main screen (the simulator). This is the default page.</li>
+<li><b>Guide (How to use)</b>: opens this page.</li>
+<li><b>Theme</b>: changes the look of the whole site. See Themes below.</li>
+<li><b>&times;</b> (or tapping outside the menu, or pressing Esc): closes the menu.</li>
+</ul>
+</section>
+
+<section id="g-theme"><h3>Themes</h3>
+<ul>
+<li><b>Light (Default)</b>: the standard light theme.</li>
+<li><b>Dark</b>: a dark theme.</li>
+<li><b>Light Bordered (Dark Border)</b>: the light theme with thick black borders and squarer corners, similar to the Blockbench look.</li>
+<li><b>Dark Bordered (White Border)</b>: the dark theme with thick white borders and squarer corners.</li>
+<li><b>OreUI (Minecraft style)</b>: a square, beveled look modeled on the dark Ore UI menus of Minecraft Bedrock: charcoal panels, light grey buttons with a darker bottom edge, green primary buttons and dark text fields. It uses the Minecraft Ten font if it is installed or placed at <code>fonts/minecraft-ten.ttf</code> (Mojangles at <code>fonts/Mojangles.ttf</code> is the second choice), and falls back to a normal font otherwise. It is an approximation, not an official Mojang theme.</li>
+<li><b>Custom</b>: your own theme. Choosing it opens an editor:
+<ul>
+<li><b>Theme name</b>: the name stored in the exported file.</li>
+<li><b>Main color</b>: page background. <b>Panel color</b>: panels, inputs and the menu.</li>
+<li><b>Text color</b> and <b>Muted text color</b>: normal text and secondary text.</li>
+<li><b>Button color</b> and <b>Button text color</b>: ordinary buttons.</li>
+<li><b>Accent color</b> and <b>Accent text color</b>: the main buttons (Play, Spawn TNT) and selected items.</li>
+<li><b>Canvas color</b>: the background of the viewport. <b>Grid color</b>: grid lines and numbers. <b>Ground color</b>: the floor in the Side view.</li>
+<li><b>Use border color (optional)</b>: when off, borders use a soft color derived from your colors. When on, you can pick the <b>Border color</b> and the <b>Border width</b> (0 to 4 px).</li>
+<li><b>Corner radius</b>: how round panels and buttons are (0 to 24 px).</li>
+<li><b>Export .tntheme</b>: saves the custom theme as a file (the text also appears in the box below). <b>Import .tntheme</b>: loads a theme file. <b>Import from text</b>: loads theme text pasted into the box. <b>Reset custom theme</b>: restores the default custom colors.</li>
+</ul></li>
+</ul>
+<p>Your theme choice and custom colors are remembered in this browser.</p>
+</section>
+
+<section id="g-top"><h3>Top bar</h3>
+<ul>
+<li><b>Side / Top</b> (only in 2D): <b>Side</b> shows X to the right and Y (height) up. <b>Top</b> looks down from above, with X to the right and Z downward.</li>
+<li><b>2D / 3D</b>: switches between the flat view and the 3D view. Each view keeps its own camera position and zoom.</li>
+</ul>
+</section>
+
+<section id="g-view"><h3>Viewport</h3>
+<p><b>Info box (top left):</b> shows <i>REC</i> while recording, <i>PAUSE</i> while paused, the current <b>Tick</b>, the number of <b>TNT</b> alive, the highest TNT speed (<b>max v</b>, in blocks per second) and a note that arrows are velocity multiplied by 6.</p>
+<p><b>Drawing:</b> each TNT is a block (a square in 2D, a textured cube in 3D). Blue arrows show velocity, orange lines are trails of where TNT have been, and a fading circle marks each explosion's push radius (8 blocks for the Bedrock formula, 4 for Custom). Grid numbers show block coordinates. In the Side view and in 3D the floor is at Y = 0.</p>
+<p><b>Camera:</b></p>
+<ul>
+<li>2D: drag to pan. Mouse wheel or a two-finger pinch zooms.</li>
+<li>3D: drag to rotate (or pan when <i>Drag: Pan</i> is on). Two fingers pan and pinch-zoom. On a computer, Shift + drag or right/middle-button drag pans, and the wheel zooms.</li>
+</ul>
+</section>
+
+<section id="g-controls"><h3>Control buttons (under the viewport)</h3>
+<ul>
+<li><b>Play / Pause</b>: runs or pauses the simulation (20 ticks per second at 1x speed). The button shows the action it will do next.</li>
+<li><b>Record / Stop</b>: records the viewport as a 1024 x 1024 video at 60 FPS. It needs at least one TNT. The scene stays frozen for a moment, then plays, and recording stops by itself when every TNT has exploded and the blast circles have faded (or after 3000 ticks, or when you press Stop). The video is saved when it ends, and a preview with a "Save video" button appears under the buttons. The format is mp4 when the browser can make it, otherwise webm.</li>
+<li><b>+1 tick</b>: advances the simulation by exactly one tick.</li>
+<li><b>Reset</b>: removes all TNT and trails, clears the log and the saved start states. Stops a running recording.</li>
+<li><b>Focus</b>: moves and zooms the camera to frame all TNT and their trails.</li>
+<li><b>Center Camera</b>: moves the camera center to 0, 0, 0 without changing the zoom.</li>
+<li><b>Drag: Rotate / Drag: Pan</b>: in 3D, chooses what a one-finger or mouse drag does. In 2D, dragging always pans.</li>
+<li><b>Save current state to .mcstructure</b>: saves every TNT you spawned since the last Reset, in the state it had when spawned, as a Bedrock structure file. It works before or after pressing Play. See File formats.</li>
+</ul>
+</section>
+
+<section id="g-settings"><h3>Settings panel</h3>
+<ul>
+<li><b>Speed</b>: 0.1x, 0.25x, 1x or 3x of normal speed.</li>
+<li><b>Knockback</b>: <i>Bedrock</i> uses the Bedrock formula (see Physics rules). <i>Custom (4 b/s, 4 blocks)</i> uses a simple linear push with a maximum of 4 blocks per second and a range of 4 blocks.</li>
+<li><b>Explosion order</b>: what happens when several TNT explode in the same tick. <i>One after another</i> processes them in spawn order, so each explosion pushes TNT that have not exploded yet and they explode at different positions. <i>All at once</i> lets every TNT whose fuse ends in that tick explode together, using the positions they have at that moment.</li>
+<li><b>Recording background</b>: Theme, White, Black, Green or Transparent for recorded videos. Transparent hides the grid and floor and needs a browser that can record webm with transparency.</li>
+<li><b>Arrows</b>: shows or hides velocity arrows. <b>Trails</b>: shows or hides trails. <b>Floor</b>: turns the Y = 0 floor on or off (without it TNT fall forever). <b>TNT border</b>: draws an outline around each TNT.</li>
+</ul>
+<p>These settings are remembered in this browser.</p>
+</section>
+
+<section id="g-spawn"><h3>Spawn TNT panel</h3>
+<ul>
+<li><b>At</b>: where the TNT is placed (its feet position). X, Y in the Side view; X, Y, Z in the Top view and in 3D (Y is the height).</li>
+<li><b>Tick</b>: the fuse. <i>Normal (80)</i> is 80 ticks (4 seconds). <i>Int</i> lets you type your own number of ticks; 0 makes the TNT explode the moment it is spawned.</li>
+<li><b>Velocity</b>: the starting speed of the TNT along X, Y and Z (Z is hidden in the Side view). The dropdown sets the unit: <b>B/t</b> blocks per tick, <b>B/s</b> per second, <b>B/m</b> per minute, <b>B/h</b> per hour (B = block, t = tick, s = second, m = minute, h = hour).</li>
+<li><b>Spawn Momentum</b>: <i>false</i> adds nothing. <i>true</i> adds the push a freshly lit TNT gets: 0.2 blocks per tick upward and 0.02 blocks per tick sideways in a random direction (only along X in the Side view). It is added on top of Velocity.</li>
+<li><b>Count</b>: how many TNT to spawn (1 to 500). The dropdown sets the layout: <i>Stack</i> puts all of them at the same point; <i>Cube</i> arranges them in a grid with 1 block spacing, centered on X and Z with the first layer at Y.</li>
+<li><b>Spawn TNT</b>: spawns the TNT into the scene using the values above.</li>
+<li><b>+ Preset</b>: adds the values above to the Draft list in the Presets panel instead of spawning.</li>
+<li><b>Example</b>: resets the scene and spawns a TNT with a normal fuse next to a TNT that explodes instantly, then frames them.</li>
+</ul>
+</section>
+
+<section id="g-presets"><h3>Presets panel</h3>
+<ul>
+<li><b>Draft</b>: the list of entries you added with + Preset. <b>Remove</b> deletes one entry.</li>
+<li><b>Preset name</b> and <b>Save Preset</b>: saves the draft as a preset and clears the draft. Saving with an existing name replaces that preset.</li>
+<li><b>Saved presets</b>: each card shows the name and the total number of TNT, with these buttons:
+<ul>
+<li><b>Play</b>: resets the scene, spawns the preset and starts the simulation.</li>
+<li><b>Record</b>: the same, but also records a video.</li>
+<li><b>More</b> opens a menu: <b>Load</b> spawns the preset and leaves it paused. <b>Save to .mcstructure</b> writes the preset straight to a Bedrock structure file without loading it. <b>Edit</b> puts the preset back into the draft so you can change it (save with the same name to replace it). <b>Export .tntpreset</b> saves just this preset as a file. <b>Delete</b> removes it (tap twice to confirm).</li>
+</ul></li>
+<li><b>Export all (.tntpreset)</b>: saves every preset in one file. <b>Import (.tntpreset)</b>: loads presets from a file. The text box shows exported text and also accepts pasted text; <b>Import from text</b> loads what is in the box.</li>
+</ul>
+<p>Presets are remembered in this browser.</p>
+</section>
+
+<section id="g-files"><h3>File formats</h3>
+<p><b>.tntpreset</b> is a JSON text file. Each preset has a <code>tnt</code> list; every entry describes one Spawn TNT setup:</p>
+<pre class="code">{
+  "format": "tntpreset",
+  "version": 1,
+  "presets": [
+    {
+      "name": "Example",
+      "tnt": [
+        {
+          "position": [2, 0.5, 0],
+          "amount": 16,
+          "layout": "stack",
+          "momentum": false,
+          "fuse": 1,
+          "velocity": { "value": [10, 0, 10], "type": "bps" }
+        }
+      ]
+    }
+  ]
+}</pre>
+<ul>
+<li><code>position</code>: X, Y, Z. <code>amount</code>: integer from 1 to 500. <code>layout</code>: "stack" or "cube". <code>momentum</code>: true or false. <code>fuse</code>: ticks (0 = instant).</li>
+<li><code>velocity.value</code>: X, Y, Z. <code>velocity.type</code>: "bpt" (blocks per tick), "bps" (per second), "bpm" (per minute) or "bph" (per hour).</li>
+</ul>
+<p><b>.tntheme</b> is also JSON. It holds the custom theme: <code>name</code>, <code>colors</code> (main, panel, text, mutedText, button, buttonText, accent, accentText, canvas, grid, ground), <code>border</code> (enabled, color, width) and <code>radius</code>.</p>
+<p><b>.mcstructure</b> is a Bedrock structure file with one primed TNT per TNT, holding its position, starting velocity (Velocity plus the momentum rolled when spawned) and fuse. Fuse is limited to 127 in the file. Positions are shifted if any coordinate is negative, and the log says so. TNT with fuse 0 explode as soon as the structure is loaded, and the game works out the knockback itself. Large structures take longer to load in the game.</p>
+</section>
+
+<section id="g-keys"><h3>Keyboard shortcuts</h3>
+<table class="tbl"><tr><th>Key</th><th>Action</th></tr>
+<tr><td>Space</td><td>Play / Pause</td></tr><tr><td>S</td><td>+1 tick</td></tr><tr><td>R</td><td>Reset</td></tr><tr><td>F</td><td>Focus</td></tr><tr><td>C</td><td>Center Camera</td></tr><tr><td>B</td><td>TNT border on/off</td></tr><tr><td>Esc</td><td>Close the menu</td></tr></table>
+<p>Shortcuts do not work while you are typing in a field.</p>
+</section>
+
+<section id="g-physics"><h3>Physics rules</h3>
+<ul>
+<li><b>Each tick:</b> gravity pulls TNT down by 0.04 blocks per tick, air drag multiplies velocity by 0.98, and the fuse counts down by 1. When the fuse reaches 0 the TNT explodes.</li>
+<li><b>Floor:</b> on the ground, horizontal speed is multiplied by 0.4 every tick and the TNT does not bounce.</li>
+<li><b>Explosion (Bedrock knockback):</b> power 4, centered 0.06125 above the exploding TNT. Another TNT gets a push of <code>1 - (distance - 0.49) / 8</code> blocks per tick, where distance is measured to its feet. Beyond about 8.49 blocks there is no push. The push is added to its velocity and follows the explosion sphere: it points from the explosion center to the TNT's feet. The exception is a TNT whose origin (X, Y, Z) is exactly the same as the exploding TNT's: it is pushed straight up. Even a tiny offset switches it back to the normal sphere direction.</li>
+<li><b>Custom knockback:</b> <code>(1 - distance / 4)</code> times 0.2 blocks per tick, so at most 4 blocks per second, and nothing beyond 4 blocks.</li>
+<li><b>Exposure</b> is always 1, because there are no blocks to shield the blast.</li>
+<li>These values come from community data and the Minecraft Wiki and are not verified against the game. Compare with Bedrock before relying on exact numbers.</li>
+</ul>
+</section>
+
+</div>
 </div>
 <script src="script.js"></script>
 </body>
